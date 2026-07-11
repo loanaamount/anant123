@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink:#0f172a; --muted:#64748b; --line:#e5e7eb; --bg:#ffffff;
+  --teal:#0fa373; --teal-dark:#083c30; --teal-mid:#0d5c47; --teal-light:#e5f8f1;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:'Inter',sans-serif; color:var(--ink); background:#f4f5f7;}
+.page{display:grid; grid-template-columns:1fr 1fr; min-height:100vh;}
+@media (max-width:900px){.page{grid-template-columns:1fr;} .visual{display:none;}}
+.form-panel{display:flex; flex-direction:column; justify-content:center; padding:48px 64px; background:var(--bg);}
+@media (max-width:560px){.form-panel{padding:32px 24px;}}
+.logo{display:flex; align-items:center; gap:8px; font-weight:700; font-size:16px; margin-bottom:40px;}
+.logo-mark{width:22px; height:22px; background:var(--teal); border-radius:6px; position:relative; flex-shrink:0;}
+.logo-mark::after{content:""; position:absolute; inset:5px; border-radius:3px; background:#fff; clip-path:polygon(30% 0,100% 0,70% 100%,0 100%);}
+.form-wrap{max-width:360px; width:100%; margin:0 auto;}
+.form-wrap h1{font-size:24px; margin:0 0 6px;}
+.form-wrap .subtitle{color:var(--muted); font-size:14px; margin:0 0 28px;}
+.field-row{display:flex; gap:12px;}
+.field-row .field{flex:1;}
+label{display:block; font-size:13px; font-weight:500; margin-bottom:6px; color:var(--ink);}
+input[type="text"],input[type="email"],input[type="password"]{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+  font-size:14px; font-family:inherit; margin-bottom:16px; background:#fff;
+}
+input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-light);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:38px;}
+.pw-toggle{position:absolute; right:10px; top:9px; background:none; border:none; color:var(--muted); cursor:pointer; padding:2px; font-size:13px;}
+.checkbox-row{display:flex; align-items:flex-start; gap:8px; margin-bottom:20px; font-size:13px; color:var(--muted);}
+.checkbox-row input{margin-top:3px; width:auto;}
+.checkbox-row a{color:var(--teal); text-decoration:none; font-weight:500;}
+.row-between{display:flex; justify-content:space-between; align-items:center; margin:-8px 0 20px; font-size:13px;}
+.row-between a{color:var(--teal); text-decoration:none; font-weight:500; cursor:pointer;}
+button.btn-primary{
+  width:100%; padding:11px 0; background:var(--teal); color:#fff; border:none;
+  border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;
+}
+button.btn-primary:hover{background:#0c8a63;}
+button.btn-primary:disabled{opacity:0.6; cursor:default;}
+.divider{display:flex; align-items:center; gap:10px; margin:20px 0; color:var(--muted); font-size:12.5px;}
+.divider::before,.divider::after{content:""; flex:1; height:1px; background:var(--line);}
+.social-row{display:flex; gap:10px; margin-bottom:24px;}
+.btn-social{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:9px 0;
+  border:1px solid var(--line); border-radius:8px; background:#fff; font-size:13.5px;
+  font-weight:500; cursor:pointer; font-family:inherit; color:var(--ink);
+}
+.btn-social:hover{background:#f8fafc;}
+.foot-note{text-align:center; font-size:13.5px; color:var(--muted);}
+.foot-note a{color:var(--teal); font-weight:600; text-decoration:none; cursor:pointer;}
+.copyright{text-align:center; font-size:12px; color:var(--muted); margin-top:40px;}
+.back-link{display:inline-flex; align-items:center; gap:6px; font-size:13.5px; color:var(--muted); text-decoration:none; margin-top:6px; cursor:pointer;}
+.back-link:hover{color:var(--ink);}
+.visual{
+  position:relative; background:linear-gradient(160deg,var(--teal-dark) 0%,var(--teal-mid) 55%,var(--teal) 100%);
+  overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; padding:40px;
+}
+.visual-mark{align-self:flex-end; width:34px; height:34px; border:1.5px solid rgba(255,255,255,0.5); border-radius:8px; position:relative;}
+.visual-mark::after{content:""; position:absolute; inset:7px; clip-path:polygon(30% 0,100% 0,70% 100%,0 100%); background:rgba(255,255,255,0.85);}
+.visual-copy{position:relative; z-index:2; color:#fff;}
+.visual-copy h2{font-size:34px; font-weight:700; line-height:1.2; margin:0;}
+.visual-copy span{color:rgba(255,255,255,0.55);}
+.wave-svg{position:absolute; inset:0; width:100%; height:100%; opacity:0.5;}
+.error-msg{color:#ef4444; font-size:13px; margin:-10px 0 16px; min-height:16px;}
+.view{display:none;}
+.view.active{display:block;}
+
+/* dashboard */
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:#fff; border-bottom:1px solid var(--line);}
+.topbar .right{display:flex; align-items:center; gap:16px;}
+.avatar{width:32px; height:32px; border-radius:50%; background:var(--teal-light); color:var(--teal); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px;}
+.dash-wrap{max-width:960px; margin:0 auto; padding:48px 24px;}
+.dash-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:28px;}
+@media (max-width:700px){.dash-cards{grid-template-columns:1fr;}}
+.dash-card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px;}
+.dash-card .label{font-size:13px; color:var(--muted); margin-bottom:6px;}
+.dash-card .value{font-size:24px; font-weight:700;}
+.logout-link{font-size:13.5px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:inherit;}
+.logout-link:hover{color:var(--ink);}
+.success-wrap{text-align:center;}
+.success-icon{width:64px; height:64px; margin:0 auto 22px; border-radius:50%; background:var(--teal-light); display:flex; align-items:center; justify-content:center;}
+</style>
+</head>
+<body>
+
+<!-- WAVE PATTERN (shared) -->
+<template id="wave-template">
+  <svg class="wave-svg" viewBox="0 0 600 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-50,650 C150,500 250,750 450,600 C600,480 650,600 700,500" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" fill="none"/>
+    <path d="M-50,600 C150,450 250,700 450,550 C600,430 650,550 700,450" stroke="rgba(255,255,255,0.14)" stroke-width="1.5" fill="none"/>
+    <path d="M-50,700 C150,560 250,800 450,650 C600,530 650,650 700,550" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none"/>
+    <path d="M-50,300 C120,180 260,380 400,260 C520,160 600,260 700,180" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+    <path d="M-50,240 C120,130 260,320 400,210 C520,120 600,210 700,130" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+  </svg>
+</template>
+
+<!-- LOGIN VIEW -->
+<div class="view active" id="view-login">
+  <div class="page">
+    <div class="form-panel">
+      <div class="form-wrap">
+        <div class="logo"><span class="logo-mark"></span>Everline</div>
+        <h1>Welcome back</h1>
+        <p class="subtitle">Log in to continue to your dashboard.</p>
+        <p class="error-msg" id="login-error"></p>
+        <form id="login-form">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="jordan@company.com" required>
+          <label for="login-password">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="login-password" placeholder="Enter your password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('login-password', this)">Show</button>
+          </div>
+          <div class="row-between"><span></span><a id="forgot-link">Forgot password?</a></div>
+          <button type="submit" class="btn-primary">Log in</button>
+        </form>
+        <div class="divider">or continue with</div>
+        <div class="social-row">
+          <button class="btn-social" id="google-btn-login">Google</button>
+          <button class="btn-social">Apple</button>
+        </div>
+        <p class="foot-note">Don't have an account yet? <a onclick="showView('signup')">Create account</a></p>
+      </div>
+      <p class="copyright">© 2026 Everline. All rights reserved.</p>
+    </div>
+    <div class="visual" data-wave><div class="visual-mark"></div>
+      <div class="visual-copy"><h2>Smarter growth,<br><span>powered by data.</span></h2></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP VIEW -->
+<div class="view" id="view-signup">
+  <div class="page">
+    <div class="form-panel">
+      <div class="form-wrap">
+        <div class="logo"><span class="logo-mark"></span>Everline</div>
+        <h1>Create an account</h1>
+        <p class="subtitle">See your growth and get consulting support.</p>
+        <p class="error-msg" id="signup-error"></p>
+        <form id="signup-form">
+          <div class="field-row">
+            <div class="field"><label for="fname">First name</label><input type="text" id="fname" placeholder="Jordan" required></div>
+            <div class="field"><label for="lname">Last name</label><input type="text" id="lname" placeholder="Lee" required></div>
+          </div>
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" placeholder="jordan@company.com" required>
+          <label for="signup-password">Create password</label>
+          <div class="pw-wrap">
+            <input type="password" id="signup-password" placeholder="At least 6 characters" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-password', this)">Show</button>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" required>
+            <span>By creating an account I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</span>
+          </div>
+          <button type="submit" class="btn-primary">Create account</button>
+        </form>
+        <div class="divider">or continue with</div>
+        <div class="social-row">
+          <button class="btn-social" id="google-btn-signup">Google</button>
+          <button class="btn-social">Apple</button>
+        </div>
+        <p class="foot-note">Already have an account? <a onclick="showView('login')">Log in</a></p>
+      </div>
+      <p class="copyright">© 2026 Everline. All rights reserved.</p>
+    </div>
+    <div class="visual" data-wave><div class="visual-mark"></div>
+      <div class="visual-copy"><h2>Smarter growth,<br><span>powered by data.</span></h2></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div class="view" id="view-dashboard">
+  <div class="topbar">
+    <div class="logo"><span class="logo-mark"></span>Everline</div>
+    <div class="right">
+      <button id="logout-btn" class="logout-link">Log out</button>
+      <div class="avatar" id="avatar">?</div>
+    </div>
+  </div>
+  <div class="dash-wrap">
+    <h1 style="font-size:26px; margin-bottom:4px;">Welcome back</h1>
+    <p style="color:var(--muted); font-size:14px;">Signed in as <strong id="user-email">...</strong></p>
+    <div class="dash-cards">
+      <div class="dash-card"><div class="label">Account status</div><div class="value" style="color:var(--teal);">Active</div></div>
+      <div class="dash-card"><div class="label">Plan</div><div class="value">Free</div></div>
+      <div class="dash-card"><div class="label">Member since</div><div class="value" id="member-since" style="font-size:18px;">—</div></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  sendPasswordResetEmail, onAuthStateChanged, signOut,
+  GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAiZt9Z2CY_adAMntd0xxlXXkudDDAceU0",
+  authDomain: "anant-19d3d.firebaseapp.com",
+  projectId: "anant-19d3d",
+  storageBucket: "anant-19d3d.firebasestorage.app",
+  messagingSenderId: "1089573048213",
+  appId: "1:1089573048213:web:9a4b1249c2316ab230f09c"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// inject wave svg into all visual panels
+document.querySelectorAll('[data-wave]').forEach(el => {
+  el.appendChild(document.getElementById('wave-template').content.cloneNode(true));
+});
+
+window.showView = function(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+};
+
+window.togglePw = function(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Hide'; }
+  else { input.type = 'password'; btn.textContent = 'Show'; }
+};
+
+function friendlyError(code) {
+  const map = {
+    "auth/email-already-in-use": "That email is already registered. Try logging in instead.",
+    "auth/invalid-email": "Enter a valid email address.",
+    "auth/weak-password": "Password should be at least 6 characters.",
+    "auth/user-not-found": "No account found with that email.",
+    "auth/wrong-password": "Incorrect password. Try again.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/too-many-requests": "Too many attempts. Try again later.",
+    "auth/popup-closed-by-user": "Google sign-in was closed before finishing."
+  };
+  return map[code] || "Something went wrong. Please try again.";
+}
+
+// Signup
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const errEl = document.getElementById('signup-error');
+  const btn = e.target.querySelector('button[type=submit]');
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    showView('dashboard');
+  } catch (err) {
+    errEl.textContent = friendlyError(err.code);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create account';
+  }
+});
+
+// Login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = e.target.querySelector('button[type=submit]');
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Logging in...';
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showView('dashboard');
+  } catch (err) {
+    errEl.textContent = friendlyError(err.code);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log in';
+  }
+});
+
+// Forgot password
+document.getElementById('forgot-link').addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value;
+  const errEl = document.getElementById('login-error');
+  if (!email) { errEl.textContent = "Enter your email above first, then click 'Forgot password?'."; return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    errEl.style.color = 'var(--teal)';
+    errEl.textContent = 'Reset link sent to ' + email + '. Check your inbox.';
+  } catch (err) {
+    errEl.style.color = '#ef4444';
+    errEl.textContent = friendlyError(err.code);
+  }
+});
+
+// Google sign-in (both buttons)
+async function googleSignIn(btn) {
+  const provider = new GoogleAuthProvider();
+  btn.disabled = true;
+  try {
+    await signInWithPopup(auth, provider);
+    showView('dashboard');
+  } catch (err) {
+    alert(friendlyError(err.code));
+  } finally {
+    btn.disabled = false;
+  }
+}
+document.getElementById('google-btn-login').addEventListener('click', (e) => googleSignIn(e.target));
+document.getElementById('google-btn-signup').addEventListener('click', (e) => googleSignIn(e.target));
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await signOut(auth);
+  showView('login');
+});
+
+// Auth state -> populate dashboard
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('avatar').textContent = user.email.charAt(0).toUpperCase();
+    if (user.metadata && user.metadata.creationTime) {
+      const d = new Date(user.metadata.creationTime);
+      document.getElementById('member-since').textContent = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    if (!document.getElementById('view-dashboard').classList.contains('active')) {
+      showView('dashboard');
+    }
+  }
+});
+</script>
+</body>
+</html>
